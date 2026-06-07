@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kaggle YOLO Submission"
+  short_description: "Generate Kaggle YOLO submission CSVs"
+  default_prompt: "Use $kaggle-yolo-submission to work with my read-only YOLO Kaggle artifacts."
