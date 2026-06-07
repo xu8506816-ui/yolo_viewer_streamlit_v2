@@ -547,19 +547,37 @@ def main() -> None:
         return
     if spec.postprocess == "wbf" and importlib.util.find_spec("ensemble_boxes") is None:
         st.error("Missing `ensemble-boxes`. Install it with `pip install -r requirements_streamlit.txt`.")
-        st.image(image, caption=image_name, use_container_width=True)
+        st.image(image, caption=image_name, use_column_width=True)
         return
     if not YOLOV7_DIR.exists():
         st.error("Missing `yolov7/`. See `STREAMLIT_DEMO.md` for setup.")
-        st.image(image, caption=image_name, use_container_width=True)
+        st.image(image, caption=image_name, use_column_width=True)
         return
 
-    left, right = st.columns([1.05, 0.95], gap="large")
-    left.image(image, caption=f"Original: {image_name}", use_container_width=True)
+    action_cols = st.columns([0.24, 0.76])
+    run_main = action_cols[0].button(
+        "Run detection",
+        type="primary",
+        use_container_width=True,
+        key="run_detection_main",
+    )
+    action_cols[1].caption(
+        "設定參數後按 Run detection；未執行前右側只會顯示 preview，不會有框。"
+    )
 
-    run = st.sidebar.button("Run detection", type="primary", use_container_width=True)
+    left, right = st.columns([1.05, 0.95], gap="large")
+    left.image(image, caption=f"Original: {image_name}", use_column_width=True)
+
+    run_sidebar = st.sidebar.button(
+        "Run detection",
+        type="primary",
+        use_container_width=True,
+        key="run_detection_sidebar",
+    )
+    run = run_main or run_sidebar
     if not run:
-        right.image(image, caption="Detection preview", use_container_width=True)
+        right.image(image, caption="Detection preview", use_column_width=True)
+        st.info("目前尚未執行推論。按上方或側欄的 Run detection 後才會畫出偵測框。")
         return
 
     with st.spinner("Running YOLOv7 inference..."):
@@ -579,7 +597,7 @@ def main() -> None:
     right.image(
         annotated,
         caption=f"{spec.label}: {len(detections)} boxes",
-        use_container_width=True,
+        use_column_width=True,
     )
 
     stat_cols = st.columns(4)
